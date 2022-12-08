@@ -1,37 +1,47 @@
-let board = [
-  [0, 1, 2, 3, 4, 5, 6, 7],
-  [0, 1, 2, 3, 4, 5, 6, 7],
-  [0, 1, 2, 3, 4, 5, 6, 7],
-  [0, 1, 2, 3, 4, 5, 6, 7],
-  [0, 1, 2, 3, 4, 5, 6, 7],
-  [0, 1, 2, 3, 4, 5, 6, 7],
-  [0, 1, 2, 3, 4, 5, 6, 7],
-  [0, 1, 2, 3, 4, 5, 6, 7],
-];
+function getNode(location, destination) {
+  if (
+    location[0] < 0 ||
+    location[1] < 0 ||
+    location[0] > 7 ||
+    location[1] > 7
+  ) {
+    return null;
+  }
+
+  return { location, destination };
+}
 
 function knightMoves([x, y], [x2, y2]) {
-  if (0 > x > 7 || 0 > y > 7 || 0 > x2 > 7 || 0 > y2 > 7) {
-    return "out of bound";
+  let queue = [getNode([x, y], [[x, y]])];
+  let currentPlace = queue.shift();
+  while (currentPlace.location[0] != x2 || currentPlace.location[1] != y2) {
+    let moveSet = [
+      [currentPlace.location[0] + 2, currentPlace.location[1] - 1],
+      [currentPlace.location[0] + 2, currentPlace.location[1] + 1],
+      [currentPlace.location[0] - 2, currentPlace.location[1] - 1],
+      [currentPlace.location[0] - 2, currentPlace.location[1] + 1],
+      [currentPlace.location[0] + 1, currentPlace.location[1] - 2],
+      [currentPlace.location[0] + 1, currentPlace.location[1] + 2],
+      [currentPlace.location[0] - 1, currentPlace.location[1] - 2],
+      [currentPlace.location[0] - 1, currentPlace.location[1] + 2],
+    ];
+    moveSet.forEach((move) => {
+      let newNode = getNode(move, currentPlace.destination.concat([move]));
+      if (newNode) {
+        queue.push(newNode);
+      }
+    });
+    currentPlace = queue.shift();
   }
+
+  let message =
+    "you made it in " +
+    (currentPlace.destination.length - 1) +
+    " moves! Here is the path";
+  console.log(message);
+  currentPlace.destination.forEach((location) => {
+    console.log(location);
+  });
 }
 
-class Knight {
-  constructor([x, y]) {
-    this.x = x;
-    this.y = y;
-    this.nLeft = [x + 2, y + 1];
-    this.nRight = [x + 2, y - 1];
-    this.eLeft = [x - 2, y + 1];
-    this.eRight = [x - 2, y - 1];
-    this.sLeft = [x - 2, y - 1];
-    this.sRight = [x - 2, y + 1];
-    this.wLeft = [x + 2, y - 1];
-    this.wRight = [x + 2, y + 1];
-  }
-}
-
-let start = [0, 0];
-
-const knight = new Knight(start);
-
-console.log(knight.wRight);
+knightMoves([3, 3], [4, 3]);
